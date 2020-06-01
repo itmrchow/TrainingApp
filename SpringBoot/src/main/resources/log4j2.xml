@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configuration後面的status，這個用於設定log4j2自身內部的資訊輸出，可以不設定，當設定成trace時， 你會看到log4j2內部各種詳細輸出。可以設定成OFF(關閉)或Error(只輸出錯誤資訊) -->
+<Configuration status="OFF">
+	<!-- 日誌檔案目錄和壓縮檔案目錄配置 -->
+	<Properties>
+		<Property name="fileName">/home/log/spring_log</Property>
+		<Property name="fileGz">/home/log/spring_log/7z</Property>
+	</Properties>
+	<Appenders>
+		<!-- 輸出控制檯日誌的配置 -->
+		<Console name="console" target="SYSTEM_OUT">
+			<!--控制檯只輸出level及以上級別的資訊（onMatch），其他的直接拒絕（onMismatch） -->
+			<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+			<!-- 輸出日誌的格式 -->
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+		<!-- 列印出所有的資訊，每次大小超過size，則這size大小的日誌會自動存入按年份-月份建立的資料夾下面並進行壓縮，作為存檔 -->
+		<RollingRandomAccessFile name="infoFile" fileName="${fileName}/web-info.log" immediateFlush="false"
+			filePattern="${fileGz}/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.web-info.gz">
+			<PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} [%t] %-5level %logger{36} %L %M - %msg%xEx%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="6" modulate="true" />
+				<SizeBasedTriggeringPolicy size="50 MB" />
+			</Policies>
+			<Filters>
+				<!-- 只記錄info和warn級別資訊 -->
+				<ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL" />
+				<ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY" />
+			</Filters>
+			<!-- 指定每天的最大壓縮包個數，預設7個，超過了會覆蓋之前的 -->
+			<DefaultRolloverStrategy max="50" />
+		</RollingRandomAccessFile>
+		<!-- 儲存所有error資訊 -->
+		<RollingRandomAccessFile name="errorFile" fileName="${fileName}/web-error.log" immediateFlush="false"
+			filePattern="${fileGz}/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.web-error.gz">
+			<PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} [%t] %-5level %logger{36} %L %M - %msg%xEx%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="6" modulate="true" />
+				<SizeBasedTriggeringPolicy size="50 MB" />
+			</Policies>
+			<Filters>
+				<!-- 只記錄error級別資訊 -->
+				<ThresholdFilter level="error " onMatch="ACCEPT" onMismatch="DENY" />
+			</Filters>
+			<!-- 指定每天的最大壓縮包個數，預設7個，超過了會覆蓋之前的 -->
+			<DefaultRolloverStrategy max="50" />
+		</RollingRandomAccessFile>
+	</Appenders>
+	<!-- 全域性配置，預設所有的Logger都繼承此配置 -->
+	<Loggers>
+		<!-- AsyncRoot - 非同步記錄日誌 - 需要LMAX Disruptor的支援 -->
+		<AsyncRoot level="info " additivity="false">
+			<Appender Refref="console " />
+			<Appender Refref="infoFile " />
+			<Appender Refref="errorFile " />
+		</AsyncRoot>
+	</Loggers>
+</Configuration>
