@@ -1,6 +1,7 @@
 package com.Training.Controller;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -39,6 +40,11 @@ public class PartsController {
 
 		return ResponseEntity.ok().body(part);
 	}
+	
+	@GetMapping
+	public ResponseEntity<List<PartModel>> findParts(){
+		return null;
+	}
 
 	// C
 	// @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -68,7 +74,6 @@ public class PartsController {
 
 	@GetMapping(value = "test")
 	public String test(Model model) {
-
 		return "test";
 	}
 
