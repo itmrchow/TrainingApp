@@ -44,13 +44,12 @@ public class PartService {
 	}
 
 	// find
-	public List<PartModel> findAllParts(PartModel part) {
-
+	public List<PartModel> findAllParts() {
 		return partRepository.findAll();
 	}
 
-	public List<PartModel> findParts(PartModel part) {
-		return partRepository.findByPartNameLike(part.getPartName());
+	public List<PartModel> findPartsByName(String partName) {
+		return partRepository.findByPartNameLike(partName);
 	}
 
 }
