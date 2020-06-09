@@ -40,6 +40,9 @@ public class PartService {
 
 	// d
 	public void deletePart(String id) {
+		if (!partRepository.existsById(id)) {
+			throw new ConflictException("ID不存在");
+		}
 		partRepository.deleteById(id);
 	}
 

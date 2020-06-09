@@ -69,7 +69,7 @@ public class PartsController {
 	}
 
 	// D
-	@DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> deletePart(@PathVariable("id") String id) {
 		partService.deletePart(id);
 
