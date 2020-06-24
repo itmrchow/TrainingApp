@@ -26,7 +26,7 @@ public class PartModel {
 
 	@CreatedDate
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "create_date" , updatable = false)
+	@Column(name = "create_date", updatable = false)
 	private Date createDate;
 
 	@LastModifiedDate

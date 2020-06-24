@@ -3,11 +3,15 @@ package com.Training.Service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.Training.Converter.PartConverter;
 import com.Training.Dao.PartRepository;
 import com.Training.Exception.ConflictException;
 import com.Training.Model.PartModel;
+import com.Training.Request.PartRequest;
+import com.Training.Response.PartResponse;
 
 @Service
 public class PartService {
@@ -16,7 +20,9 @@ public class PartService {
 	PartRepository partRepository;
 
 	// c
-	public PartModel createPart(PartModel part) {
+	public PartModel createPart(PartRequest partRequest) {
+		PartModel part = PartConverter.toPartModel(partRequest);
+
 		// 檢查DB是否已經存在
 		if (partRepository.existsById(part.getId())) {
 			throw new ConflictException("ID已存在");
@@ -26,16 +32,23 @@ public class PartService {
 	}
 
 	// r
-	public PartModel getPart(String id) {
-		return partRepository.findById(id).get();
+	public PartResponse getPart(String id) {
+		PartModel partModel = partRepository.findById(id).get();
+
+		return PartConverter.toPartResponse(partModel);
 	}
 
 	// u
-	public PartModel updatePart(PartModel part) {
-		if (!partRepository.existsById(part.getId())) {
+	public PartResponse updatePart(PartRequest part) {
+		PartModel partModel = PartConverter.toPartModel(part);
+
+		if (!partRepository.existsById(partModel.getId())) {
 			throw new ConflictException("ID不存在");
 		}
-		return partRepository.save(part);
+
+		partModel = partRepository.save(partModel);
+
+		return PartConverter.toPartResponse(partModel);
 	}
 
 	// d
@@ -47,12 +60,14 @@ public class PartService {
 	}
 
 	// find
-	public List<PartModel> findAllParts() {
-		return partRepository.findAll();
+	public List<PartResponse> findAllParts() {
+		List<PartModel> partModels = partRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+		return PartConverter.toPartResponseList(partModels);
 	}
 
-	public List<PartModel> findPartsByName(String partName) {
-		return partRepository.findByPartNameLike(partName);
+	public List<PartResponse> findPartsByName(String partName) {
+		List<PartModel> partModels = partRepository.findByPartNameLike(partName, Sort.by(Sort.Direction.ASC, "id"));
+		return PartConverter.toPartResponseList(partModels);
 	}
 
 }

@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan("com.Training")
 @EnableJpaRepositories("com.Training.Dao")
 @EnableJpaAuditing
-@EntityScan("com.Training.Model")
+@EntityScan("com.Training")
 
 public class TrainingAppApplication {
 
